@@ -13,6 +13,7 @@ export const CORS_HEADERS = {
 
 export function corsOptions(request: NextRequest) {
     const origin = request.headers.get("origin");
+    console.log(`[CORS] Origin received: ${origin}`);
     const isAllowedOrigin = !origin || allowedOrigins.includes(origin) || (process.env.NODE_ENV === "development" && allowedOrigins.length === 0);
 
     const headers = new Headers(CORS_HEADERS);
