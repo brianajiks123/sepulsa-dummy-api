@@ -18,12 +18,12 @@ export async function GET(
     `;
 
         if (rows.length === 0) {
-            return errorResponse('Log entry not found', 404);
+            return errorResponse(_request, 'Log entry not found', 404);
         }
 
-        return jsonResponse({ data: rows[0] });
+        return jsonResponse(_request, { data: rows[0] });
     } catch (error) {
         console.error('Error fetching log:', error);
-        return errorResponse('Failed to fetch log', 500);
+        return errorResponse(_request, 'Failed to fetch log', 500);
     }
 }

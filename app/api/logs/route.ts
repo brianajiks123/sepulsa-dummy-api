@@ -19,9 +19,9 @@ export async function GET(request: NextRequest) {
       LIMIT ${parseInt(limit, 10)} OFFSET ${parseInt(offset, 10)}
     `;
 
-        return jsonResponse({ data: rows, count: rows.length });
+        return jsonResponse(request, { data: rows, count: rows.length });
     } catch (error) {
         console.error('Error fetching logs:', error);
-        return errorResponse('Failed to fetch logs', 500);
+        return errorResponse(request, 'Failed to fetch logs', 500);
     }
 }

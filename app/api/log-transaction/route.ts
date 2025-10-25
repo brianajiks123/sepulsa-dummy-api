@@ -13,18 +13,18 @@ export async function POST(request: NextRequest) {
         const { transaction_type, status, message, details } = body;
 
         if (!transaction_type || !status || !message) {
-            return errorResponse('Missing required fields: transaction_type, status, message', 400);
+            return errorResponse(request, 'Missing required fields: transaction_type, status, message', 400);
         }
 
         if (!['success', 'failed'].includes(status)) {
-            return errorResponse('Invalid status. Must be "success" or "failed"', 400);
+            return errorResponse(request, 'Invalid status. Must be "success" or "failed"', 400);
         }
 
         await logTransaction(transaction_type, status, message, details);
 
-        return jsonResponse({ message: 'Transaction logged successfully' }, 201);
+        return jsonResponse(request, { message: 'Transaction logged successfully' }, 201);
     } catch (error) {
         console.error('Error logging transaction:', error);
-        return errorResponse('Failed to log transaction', 500);
+        return errorResponse(request, 'Failed to log transaction', 500);
     }
 }

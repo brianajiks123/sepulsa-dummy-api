@@ -1,46 +1,28 @@
-import { NextResponse } from "next/server";
-import { CORS_HEADERS } from "./cors";
+import { NextRequest } from "next/server";
+import { corsJson } from "./cors";
 
-export function jsonResponse<T>(data: T, status: number = 200) {
-    return NextResponse.json(
-        {
-            success: status >= 200 && status < 300,
-            status,
-            data,
-        },
-        {
-            status,
-            headers: CORS_HEADERS,
-        }
-    );
+export function jsonResponse<T>(request: NextRequest, data: T, status: number = 200) {
+    return corsJson(request, {
+        success: status >= 200 && status < 300,
+        status,
+        data,
+    }, status);
 }
 
-export function errorResponse(message: string, status: number = 400) {
-    return NextResponse.json(
-        {
-            success: false,
-            status,
-            error: {
-                message,
-            },
-        },
-        {
-            status,
-            headers: CORS_HEADERS,
-        }
-    );
-}
-
-export function successResponse(message: string, status: number = 200) {
-    return NextResponse.json(
-        {
-            success: true,
-            status,
+export function errorResponse(request: NextRequest, message: string, status: number = 400) {
+    return corsJson(request, {
+        success: false,
+        status,
+        error: {
             message,
         },
-        {
-            status,
-            headers: CORS_HEADERS,
-        }
-    );
+    }, status);
+}
+
+export function successResponse(request: NextRequest, message: string, status: number = 200) {
+    return corsJson(request, {
+        success: true,
+        status,
+        message,
+    }, status);
 }
