@@ -8,11 +8,11 @@ export async function OPTIONS(request: NextRequest) {
 }
 
 export async function GET(
-    request: NextRequest,
-    { params }: { params: { id: string } }
+    _request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const { id } = params;
+        const { id } = await params;
         const rows: LogRow[] = await query<LogRow>`
       SELECT * FROM log WHERE id = ${parseInt(id, 10)} ORDER BY created_at DESC
     `;
