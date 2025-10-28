@@ -14,8 +14,8 @@ export async function GET(
     try {
         const { id } = await params;
         const rows: LogRow[] = await query<LogRow>`
-      SELECT * FROM log WHERE id = ${parseInt(id, 10)} ORDER BY created_at DESC
-    `;
+            SELECT * FROM log WHERE id = ${parseInt(id, 10)} ORDER BY created_at DESC
+        `;
 
         if (rows.length === 0) {
             return errorResponse(_request, 'Log entry not found', 404);
