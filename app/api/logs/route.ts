@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
         const limit = searchParams.get('limit') || '10';
         const offset = searchParams.get('offset') || '0';
 
-        const { rows } = await sql`
+        const rows = await sql`
             SELECT 
                 id, 
                 timestamp AT TIME ZONE 'Asia/Jakarta' AS timestamp,

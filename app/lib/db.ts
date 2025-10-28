@@ -1,12 +1,12 @@
 import { neon } from '@netlify/neon';
 
-const sql = neon();
+export const sql = neon();
 
 export interface LogRow {
     id: number;
     timestamp: string;
     transaction_type: string;
-    status: 'success' |'pending' | 'failed';
+    status: 'success' | 'pending' | 'failed';
     message: string;
     details: string | null;
     created_at: string;
@@ -14,7 +14,7 @@ export interface LogRow {
 
 export async function logTransaction(
     transactionType: string,
-    status: 'success' |'pending' | 'failed',
+    status: 'success' | 'pending' | 'failed',
     message: string,
     details?: Record<string, unknown>
 ): Promise<void> {

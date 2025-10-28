@@ -13,7 +13,7 @@ export async function GET(
 ) {
     try {
         const { id } = await params;
-        const { rows } = await sql`
+        const rows = await sql`
             SELECT 
                 id, 
                 timestamp AT TIME ZONE 'Asia/Jakarta' AS timestamp,
