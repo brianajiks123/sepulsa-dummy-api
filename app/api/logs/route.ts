@@ -14,10 +14,10 @@ export async function GET(request: NextRequest) {
         const offset = searchParams.get('offset') || '0';
 
         const rows: LogRow[] = await query<LogRow>`
-      SELECT * FROM log 
-      ORDER BY created_at DESC 
-      LIMIT ${parseInt(limit, 10)} OFFSET ${parseInt(offset, 10)}
-    `;
+            SELECT * FROM log 
+            ORDER BY created_at DESC 
+            LIMIT ${parseInt(limit, 10)} OFFSET ${parseInt(offset, 10)}
+        `;
 
         return jsonResponse(request, { data: rows, count: rows.length });
     } catch (error) {
