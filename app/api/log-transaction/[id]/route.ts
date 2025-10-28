@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { corsOptions } from '@/app/lib/utils/cors';
-import { query, LogRow } from '@/app/lib/db';
+import { sql } from '@/app/lib/db';
 import { jsonResponse, errorResponse } from '@/app/lib/utils/response';
 
 export async function OPTIONS(request: NextRequest) {
@@ -13,8 +13,18 @@ export async function GET(
 ) {
     try {
         const { id } = await params;
-        const rows: LogRow[] = await query<LogRow>`
-            SELECT * FROM log WHERE id = ${parseInt(id, 10)} ORDER BY created_at DESC
+        const { rows } = await sql`
+            SELECT 
+                id, 
+                timestamp AT TIME ZONE 'Asia/Jakarta' AS timestamp,
+                transaction_type, 
+                status, 
+                message, 
+                details, 
+                created_at AT TIME ZONE 'Asia/Jakarta' AS created_at
+            FROM log 
+            WHERE id = ${parseInt(id, 10)} 
+            ORDER BY created_at DESC
         `;
 
         if (rows.length === 0) {
