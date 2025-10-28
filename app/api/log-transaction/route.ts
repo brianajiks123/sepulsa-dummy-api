@@ -16,8 +16,8 @@ export async function POST(request: NextRequest) {
             return errorResponse(request, 'Missing required fields: transaction_type, status, message', 400);
         }
 
-        if (!['success', 'failed'].includes(status)) {
-            return errorResponse(request, 'Invalid status. Must be "success" or "failed"', 400);
+        if (!['success', 'pending', 'failed'].includes(status)) {
+            return errorResponse(request, 'Invalid status. Must be "success", "pending", "failed"', 400);
         }
 
         await logTransaction(transaction_type, status, message, details);
