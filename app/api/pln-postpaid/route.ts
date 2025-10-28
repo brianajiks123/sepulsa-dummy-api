@@ -65,28 +65,64 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(parseInt(searchParams.get('limit') || '50', 10), 100);
 
     try {
-        let query = sql`
-            SELECT
-                id,
-                id_pelanggan,
-                nama_pelanggan,
-                nomor_pelanggan,
-                nominal,
-                created_at AT TIME ZONE 'Asia/Jakarta' AS created_at
-            FROM pln_customers
-            WHERE 1=1
-        `;
+        let rows: PlnCustomer[];
 
-        if (nomorPelanggan) {
-            query = sql`${query} AND nomor_pelanggan = ${nomorPelanggan}`;
+        if (nomorPelanggan && idPelanggan) {
+            rows = await sql`
+                SELECT
+                    id,
+                    id_pelanggan,
+                    nama_pelanggan,
+                    nomor_pelanggan,
+                    nominal,
+                    created_at AT TIME ZONE 'Asia/Jakarta' AS created_at
+                FROM pln_customers
+                WHERE nomor_pelanggan = ${nomorPelanggan} AND id_pelanggan = ${idPelanggan}
+                ORDER BY created_at DESC
+                LIMIT ${limit}
+            ` as PlnCustomer[];
+        } else if (nomorPelanggan) {
+            rows = await sql`
+                SELECT
+                    id,
+                    id_pelanggan,
+                    nama_pelanggan,
+                    nomor_pelanggan,
+                    nominal,
+                    created_at AT TIME ZONE 'Asia/Jakarta' AS created_at
+                FROM pln_customers
+                WHERE nomor_pelanggan = ${nomorPelanggan}
+                ORDER BY created_at DESC
+                LIMIT ${limit}
+            ` as PlnCustomer[];
+        } else if (idPelanggan) {
+            rows = await sql`
+                SELECT
+                    id,
+                    id_pelanggan,
+                    nama_pelanggan,
+                    nomor_pelanggan,
+                    nominal,
+                    created_at AT TIME ZONE 'Asia/Jakarta' AS created_at
+                FROM pln_customers
+                WHERE id_pelanggan = ${idPelanggan}
+                ORDER BY created_at DESC
+                LIMIT ${limit}
+            ` as PlnCustomer[];
+        } else {
+            rows = await sql`
+                SELECT
+                    id,
+                    id_pelanggan,
+                    nama_pelanggan,
+                    nomor_pelanggan,
+                    nominal,
+                    created_at AT TIME ZONE 'Asia/Jakarta' AS created_at
+                FROM pln_customers
+                ORDER BY created_at DESC
+                LIMIT ${limit}
+            ` as PlnCustomer[];
         }
-        if (idPelanggan) {
-            query = sql`${query} AND id_pelanggan = ${idPelanggan}`;
-        }
-
-        query = sql`${query} ORDER BY created_at DESC LIMIT ${limit}`;
-
-        const rows = await query as PlnCustomer[];
 
         if (rows.length === 0) {
             return errorResponse(request, 'No pelanggan found matching the criteria', 404);
