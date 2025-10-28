@@ -1,7 +1,9 @@
 import { NextRequest } from 'next/server';
 import { corsOptions } from '@/app/lib/utils/cors';
-import { logTransaction, createPlnCustomer, sql } from '@/app/lib/db';
+import { sql } from '@/app/lib/db';
+import { logTransaction, createPlnCustomer } from '@/app/lib/db';
 import { jsonResponse, errorResponse } from '@/app/lib/utils/response';
+import { corsJson } from '@/app/lib/utils/cors';
 
 export interface PlnCustomer {
     id: number;
@@ -57,12 +59,12 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
-    try {
-        const { searchParams } = new URL(request.url);
-        const nomorPelanggan = searchParams.get('nomor_pelanggan');
-        const idPelanggan = searchParams.get('id_pelanggan');
-        const limit = Math.min(parseInt(searchParams.get('limit') || '50', 10), 100);
+    const { searchParams } = new URL(request.url);
+    const nomorPelanggan = searchParams.get('nomor_pelanggan');
+    const idPelanggan = searchParams.get('id_pelanggan');
+    const limit = Math.min(parseInt(searchParams.get('limit') || '50', 10), 100);
 
+    try {
         let query = sql`
             SELECT
                 id,
@@ -96,8 +98,22 @@ export async function GET(request: NextRequest) {
             filters: { nomor_pelanggan: nomorPelanggan || null, id_pelanggan: idPelanggan || null }
         });
 
-    } catch (error) {
-        console.error('Error querying PLN customers:', error);
-        return errorResponse(request, 'Failed to query pelanggan data', 500);
+    } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+
+        console.error('Error querying PLN customers:', {
+            message: errorMessage,
+            stack: error instanceof Error ? error.stack : undefined,
+            params: { nomor_pelanggan: nomorPelanggan, id_pelanggan: idPelanggan, limit }
+        });
+
+        return corsJson(request, {
+            success: false,
+            status: 500,
+            error: {
+                message: 'Failed to query pelanggan data',
+                details: errorMessage,
+            },
+        }, 500);
     }
 }
