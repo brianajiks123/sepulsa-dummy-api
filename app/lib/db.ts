@@ -37,6 +37,20 @@ export async function logTransaction(
     `;
 }
 
+export async function createPlnToken(
+    nomorMeter: string,
+    namaPelanggan: string,
+    nominal: number,
+    tokenNumber?: string
+) {
+    const result = await sql`
+        INSERT INTO pln_tokens (nomor_meter, nama_pelanggan, nominal, token_number)
+        VALUES (${nomorMeter}, ${namaPelanggan}, ${nominal}, ${tokenNumber || null})
+        RETURNING id, nomor_meter, nama_pelanggan, nominal, token_number, created_at AT TIME ZONE 'Asia/Jakarta' AS created_at
+    `;
+    return result[0];
+}
+
 export async function createPlnCustomer(
     idPelanggan: string,
     namaPelanggan: string,
