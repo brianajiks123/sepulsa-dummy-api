@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { corsOptions } from '@/app/lib/utils/cors';
 import { sql } from '@/app/lib/db';
-import { logTransaction, createPlnToken } from '@/app/lib/db';
+import { logTransaction, updatePlnToken } from '@/app/lib/db';
 import { jsonResponse, errorResponse } from '@/app/lib/utils/response';
 import { corsJson } from '@/app/lib/utils/cors';
 import type { PlnToken } from '@/app/lib/types/pln';
@@ -13,25 +13,27 @@ export async function OPTIONS(request: NextRequest) {
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const { nomor_meter, nama_pelanggan, nominal, token_number } = body;
-        if (!nomor_meter || !nama_pelanggan || nominal == null) {
-            return errorResponse(request, 'Missing required fields: nomor_meter, nama_pelanggan, nominal', 400);
+        const { nomor_meter, nama_pelanggan, email_pelanggan, nomor_pelanggan, nominal, token_number } = body;
+        if (!nomor_meter || !nama_pelanggan || nominal == null || !token_number) {
+            return errorResponse(request, 'Missing required fields: nomor_meter, nama_pelanggan, nominal, token_number', 400);
         }
-        if (typeof nomor_meter !== 'string' || typeof nama_pelanggan !== 'string') {
-            return errorResponse(request, 'Invalid types: nomor_meter, nama_pelanggan must be strings', 400);
+        if (typeof nomor_meter !== 'string' || typeof nama_pelanggan !== 'string' || typeof token_number !== 'string') {
+            return errorResponse(request, 'Invalid types: nomor_meter, nama_pelanggan, token_number must be strings', 400);
         }
         if (typeof nominal !== 'number' || nominal <= 0) {
             return errorResponse(request, 'Invalid nominal: must be a positive number', 400);
         }
+        const emailPel = email_pelanggan || null;
+        const nomorPel = nomor_pelanggan || null;
         await logTransaction(
-            'PLN_TOKEN',
+            'PLN TOKEN',
             'pending',
             `Pembelian token listrik untuk ${nomor_meter}`,
-            { nomor_meter, nama_pelanggan, nominal, token_number }
+            { nomor_meter, nama_pelanggan, email_pelanggan: emailPel, nomor_pelanggan: nomorPel, nominal, token_number }
         );
-        const tokenData = await createPlnToken(nomor_meter, nama_pelanggan, nominal, token_number);
+        const tokenData = await updatePlnToken(nomor_meter, nama_pelanggan, emailPel, nomorPel, nominal, token_number);
         return jsonResponse(request, {
-            message: 'Data token listrik berhasil diproses dan dicatat',
+            message: 'Data token listrik berhasil diupdate/dicatat',
             data: tokenData,
         }, 201);
     } catch (error) {
@@ -52,6 +54,8 @@ export async function GET(request: NextRequest) {
                     id,
                     nomor_meter,
                     nama_pelanggan,
+                    email_pelanggan,
+                    nomor_pelanggan,
                     nominal,
                     token_number,
                     created_at AT TIME ZONE 'Asia/Jakarta' AS created_at
@@ -66,6 +70,8 @@ export async function GET(request: NextRequest) {
                     id,
                     nomor_meter,
                     nama_pelanggan,
+                    email_pelanggan,
+                    nomor_pelanggan,
                     nominal,
                     token_number,
                     created_at AT TIME ZONE 'Asia/Jakarta' AS created_at
@@ -78,9 +84,7 @@ export async function GET(request: NextRequest) {
             return errorResponse(request, 'No token data found matching the criteria', 404);
         }
         return jsonResponse(request, {
-            data: rows,
-            count: rows.length,
-            filters: { nomor_meter: nomorMeter || null }
+            data: { data: rows, count: rows.length, filters: { nomor_meter: nomorMeter || null } }
         });
     } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
@@ -92,6 +96,7 @@ export async function GET(request: NextRequest) {
         return corsJson(request, {
             success: false,
             status: 500,
+            data: { data: [], count: 0, filters: { nomor_meter: null } },
             error: {
                 message: 'Failed to query token data',
                 details: errorMessage,
