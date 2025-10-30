@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
             `Pembayaran PLN pascabayar untuk ${nomor_pelanggan}`,
             { id_pelanggan, nama_pelanggan, email_pelanggan: email, nomor_pelanggan, nominal }
         );
-        const customer = await createPlnCustomer(id_pelanggan, nama_pelanggan, email, nomor_pelanggan, nominal);  // FIXED: Pass email (bisa null)
+        const customer = await createPlnCustomer(id_pelanggan, nama_pelanggan, email, nomor_pelanggan, nominal);
         return jsonResponse(request, { message: 'Data pelanggan PLN pascabayar berhasil diproses dan dicatat', data: customer }, 201);
     } catch (error) {
         console.error('Error processing PLN postpaid:', error);
@@ -109,7 +109,7 @@ export async function GET(request: NextRequest) {
             return errorResponse(request, 'No pelanggan found matching the criteria', 404);
         }
         return jsonResponse(request, {
-            data: { data: rows, count: rows.length, filters: { nomor_pelanggan: nomorPelanggan || null, id_pelanggan: idPelanggan || null } }
+            data: rows, count: rows.length, filters: { nomor_pelanggan: nomorPelanggan || null, id_pelanggan: idPelanggan || null }
         });
     } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
