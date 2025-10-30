@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const nomorMeter = searchParams.get('nomor_meter');
-    const limit = Math.min(parseInt(searchParams.get('limit') || '50', 10), 100);
+    const limit = nomorMeter ? 1 : Math.min(parseInt(searchParams.get('limit') || '50', 10), 100);
     try {
         let rows: PlnToken[];
         if (nomorMeter) {

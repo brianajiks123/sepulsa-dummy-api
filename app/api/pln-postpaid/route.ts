@@ -14,12 +14,13 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
         const { id_pelanggan, nama_pelanggan, email_pelanggan, nomor_pelanggan, nominal } = body;
-        if (!id_pelanggan || !nama_pelanggan || !email_pelanggan || !nomor_pelanggan || nominal == null) {
-            return errorResponse(request, 'Missing required fields: id_pelanggan, nama_pelanggan, email_pelanggan, nomor_pelanggan, nominal', 400);
+        if (!id_pelanggan || !nama_pelanggan || !nomor_pelanggan || nominal == null) {
+            return errorResponse(request, 'Missing required fields: id_pelanggan, nama_pelanggan, nomor_pelanggan, nominal', 400);
         }
-        if (typeof id_pelanggan !== 'string' || typeof nama_pelanggan !== 'string' || typeof nomor_pelanggan !== 'string' || typeof email_pelanggan !== 'string') {
+        if (typeof id_pelanggan !== 'string' || typeof nama_pelanggan !== 'string' || typeof nomor_pelanggan !== 'string') {
             return errorResponse(request, 'Invalid types: fields must be strings', 400);
         }
+        const email = email_pelanggan || null;
         if (typeof nominal !== 'number' || nominal <= 0) {
             return errorResponse(request, 'Invalid nominal: must be a positive number', 400);
         }
@@ -27,9 +28,9 @@ export async function POST(request: NextRequest) {
             'PLN PASCABAYAR',
             'pending',
             `Pembayaran PLN pascabayar untuk ${nomor_pelanggan}`,
-            { id_pelanggan, nama_pelanggan, email_pelanggan, nomor_pelanggan, nominal }
+            { id_pelanggan, nama_pelanggan, email_pelanggan: email, nomor_pelanggan, nominal }
         );
-        const customer = await createPlnCustomer(id_pelanggan, nama_pelanggan, email_pelanggan, nomor_pelanggan, nominal);
+        const customer = await createPlnCustomer(id_pelanggan, nama_pelanggan, email, nomor_pelanggan, nominal);  // FIXED: Pass email (bisa null)
         return jsonResponse(request, { message: 'Data pelanggan PLN pascabayar berhasil diproses dan dicatat', data: customer }, 201);
     } catch (error) {
         console.error('Error processing PLN postpaid:', error);
@@ -41,7 +42,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const nomorPelanggan = searchParams.get('nomor_pelanggan');
     const idPelanggan = searchParams.get('id_pelanggan');
-    const limit = Math.min(parseInt(searchParams.get('limit') || '50', 10), 100);
+    const limit = idPelanggan ? 1 : Math.min(parseInt(searchParams.get('limit') || '50', 10), 100);
     try {
         let rows: PlnCustomer[];
         if (nomorPelanggan && idPelanggan) {

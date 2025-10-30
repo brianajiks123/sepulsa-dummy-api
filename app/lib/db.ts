@@ -16,7 +16,7 @@ export interface PlnCustomer {
     id: number;
     id_pelanggan: string;
     nama_pelanggan: string;
-    email_pelanggan: string;
+    email_pelanggan?: string | null;
     nomor_pelanggan: string;
     nominal: number;
     created_at: string;
@@ -39,7 +39,7 @@ export async function logTransaction(
 export async function createPlnCustomer(
     idPelanggan: string,
     namaPelanggan: string,
-    emailPelanggan: string,
+    emailPelanggan: string | null,
     nomorPelanggan: string,
     nominal: number
 ): Promise<PlnCustomer> {
@@ -55,7 +55,7 @@ export async function createPlnCustomer(
 export async function updatePlnToken(
     nomorMeter: string,
     namaPelanggan: string,
-    emailPelanggan: string,
+    emailPelanggan: string | null,
     nomorPelanggan: string,
     nominal: number,
     tokenNumber: string
