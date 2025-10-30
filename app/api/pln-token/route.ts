@@ -14,24 +14,23 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
         const { nomor_meter, nama_pelanggan, email_pelanggan, nomor_pelanggan, nominal, token_number } = body;
-        if (!nomor_meter || !nama_pelanggan || nominal == null || !token_number) {
-            return errorResponse(request, 'Missing required fields: nomor_meter, nama_pelanggan, nominal, token_number', 400);
+        if (!nomor_meter || !nama_pelanggan || !nomor_pelanggan || nominal == null || !token_number) {
+            return errorResponse(request, 'Missing required fields: nomor_meter, nama_pelanggan, nomor_pelanggan, nominal, token_number', 400);
         }
-        if (typeof nomor_meter !== 'string' || typeof nama_pelanggan !== 'string' || typeof token_number !== 'string') {
-            return errorResponse(request, 'Invalid types: nomor_meter, nama_pelanggan, token_number must be strings', 400);
+        if (typeof nomor_meter !== 'string' || typeof nama_pelanggan !== 'string' || typeof nomor_pelanggan !== 'string' || typeof token_number !== 'string') {
+            return errorResponse(request, 'Invalid types: nomor_meter, nama_pelanggan, nomor_pelanggan, token_number must be strings', 400);
         }
         if (typeof nominal !== 'number' || nominal <= 0) {
             return errorResponse(request, 'Invalid nominal: must be a positive number', 400);
         }
         const emailPel = email_pelanggan || null;
-        const nomorPel = nomor_pelanggan || null;
         await logTransaction(
             'PLN TOKEN',
             'pending',
             `Pembelian token listrik untuk ${nomor_meter}`,
-            { nomor_meter, nama_pelanggan, email_pelanggan: emailPel, nomor_pelanggan: nomorPel, nominal, token_number }
+            { nomor_meter, nama_pelanggan, email_pelanggan: emailPel, nomor_pelanggan, nominal, token_number }
         );
-        const tokenData = await updatePlnToken(nomor_meter, nama_pelanggan, emailPel, nomorPel, nominal, token_number);
+        const tokenData = await updatePlnToken(nomor_meter, nama_pelanggan, emailPel, nomor_pelanggan, nominal, token_number);
         return jsonResponse(request, {
             message: 'Data token listrik berhasil diupdate/dicatat',
             data: tokenData,
