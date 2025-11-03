@@ -1,4 +1,4 @@
-export interface PlnCustomer {
+export type PlnCustomer = {
     id: number;
     id_pelanggan: string;
     nama_pelanggan: string;
@@ -9,7 +9,7 @@ export interface PlnCustomer {
     updated_at: string;
 }
 
-export interface PlnToken {
+export type PlnToken = {
     id: number;
     nomor_meter: string;
     nama_pelanggan: string;

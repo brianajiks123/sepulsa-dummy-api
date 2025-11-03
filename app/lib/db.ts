@@ -1,26 +1,7 @@
 import { neon } from '@netlify/neon';
+import { PlnCustomer } from './types/pln';
 
 export const sql = neon();
-
-export interface LogRow {
-    id: number;
-    timestamp: string;
-    transaction_type: string;
-    status: 'success' | 'pending' | 'failed';
-    message: string;
-    details: string | null;
-    created_at: string;
-}
-
-export interface PlnCustomer {
-    id: number;
-    id_pelanggan: string;
-    nama_pelanggan: string;
-    email_pelanggan: string;
-    nomor_pelanggan: string;
-    nominal: number;
-    created_at: string;
-}
 
 export async function logTransaction(
     transactionType: string,

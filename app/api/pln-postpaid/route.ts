@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
                     email_pelanggan,
                     nomor_pelanggan,
                     nominal,
-                    created_at AT TIME ZONE 'Asia/Jakarta' AS created_at
+                    created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
                     updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
                 FROM pln_customers
                 WHERE nomor_pelanggan = ${nomorPelanggan} AND id_pelanggan = ${idPelanggan}
@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
                     email_pelanggan,
                     nomor_pelanggan,
                     nominal,
-                    created_at AT TIME ZONE 'Asia/Jakarta' AS created_at
+                    created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
                     updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
                 FROM pln_customers
                 WHERE nomor_pelanggan = ${nomorPelanggan}
@@ -86,7 +86,7 @@ export async function GET(request: NextRequest) {
                     email_pelanggan,
                     nomor_pelanggan,
                     nominal,
-                    created_at AT TIME ZONE 'Asia/Jakarta' AS created_at
+                    created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
                     updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
                 FROM pln_customers
                 WHERE id_pelanggan = ${idPelanggan}
@@ -102,7 +102,7 @@ export async function GET(request: NextRequest) {
                     email_pelanggan,
                     nomor_pelanggan,
                     nominal,
-                    created_at AT TIME ZONE 'Asia/Jakarta' AS created_at
+                    created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
                     updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
                 FROM pln_customers
                 ORDER BY created_at DESC
