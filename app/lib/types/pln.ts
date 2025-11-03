@@ -6,6 +6,7 @@ export interface PlnCustomer {
     nomor_pelanggan?: string;
     nominal: number;
     created_at: string;
+    updated_at: string;
 }
 
 export interface PlnToken {
@@ -17,4 +18,5 @@ export interface PlnToken {
     nominal: number;
     token_number?: string;
     created_at: string;
+    updated_at: string;
 }
