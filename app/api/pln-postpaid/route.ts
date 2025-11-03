@@ -55,6 +55,7 @@ export async function GET(request: NextRequest) {
                     nomor_pelanggan,
                     nominal,
                     created_at AT TIME ZONE 'Asia/Jakarta' AS created_at
+                    updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
                 FROM pln_customers
                 WHERE nomor_pelanggan = ${nomorPelanggan} AND id_pelanggan = ${idPelanggan}
                 ORDER BY created_at DESC
@@ -70,6 +71,7 @@ export async function GET(request: NextRequest) {
                     nomor_pelanggan,
                     nominal,
                     created_at AT TIME ZONE 'Asia/Jakarta' AS created_at
+                    updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
                 FROM pln_customers
                 WHERE nomor_pelanggan = ${nomorPelanggan}
                 ORDER BY created_at DESC
@@ -85,6 +87,7 @@ export async function GET(request: NextRequest) {
                     nomor_pelanggan,
                     nominal,
                     created_at AT TIME ZONE 'Asia/Jakarta' AS created_at
+                    updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
                 FROM pln_customers
                 WHERE id_pelanggan = ${idPelanggan}
                 ORDER BY created_at DESC
@@ -100,6 +103,7 @@ export async function GET(request: NextRequest) {
                     nomor_pelanggan,
                     nominal,
                     created_at AT TIME ZONE 'Asia/Jakarta' AS created_at
+                    updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
                 FROM pln_customers
                 ORDER BY created_at DESC
                 LIMIT ${limit}

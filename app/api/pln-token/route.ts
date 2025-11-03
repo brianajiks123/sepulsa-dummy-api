@@ -58,6 +58,7 @@ export async function GET(request: NextRequest) {
                     nominal,
                     token_number,
                     created_at AT TIME ZONE 'Asia/Jakarta' AS created_at
+                    updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
                 FROM pln_tokens
                 WHERE nomor_meter = ${nomorMeter}
                 ORDER BY created_at DESC
@@ -74,6 +75,7 @@ export async function GET(request: NextRequest) {
                     nominal,
                     token_number,
                     created_at AT TIME ZONE 'Asia/Jakarta' AS created_at
+                    updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
                 FROM pln_tokens
                 ORDER BY created_at DESC
                 LIMIT ${limit}
