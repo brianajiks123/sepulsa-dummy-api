@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { corsOptions } from '@/app/lib/utils/cors';
 import { sql } from '@/app/lib/db';
-import { logTransaction, createPlnCustomer } from '@/app/lib/db';
+import { logTransaction, updatePlnCustomer } from '@/app/lib/db';
 import { jsonResponse, errorResponse } from '@/app/lib/utils/response';
 import { corsJson } from '@/app/lib/utils/cors';
 import type { PlnCustomer } from '@/app/lib/types/pln';
@@ -30,8 +30,8 @@ export async function POST(request: NextRequest) {
             `Pembayaran PLN pascabayar untuk ${nomor_pelanggan}`,
             { id_pelanggan, nama_pelanggan, email_pelanggan: email, nomor_pelanggan, nominal }
         );
-        const customer = await createPlnCustomer(id_pelanggan, nama_pelanggan, email, nomor_pelanggan, nominal);
-        return jsonResponse(request, { message: 'Data pelanggan PLN pascabayar berhasil diproses dan dicatat', data: customer }, 201);
+        const customer = await updatePlnCustomer(id_pelanggan, nama_pelanggan, email, nomor_pelanggan, nominal);
+        return jsonResponse(request, { message: 'Data pelanggan PLN pascabayar berhasil diupdate/dicatat', data: customer }, 201);
     } catch (error) {
         console.error('Error processing PLN postpaid:', error);
         return errorResponse(request, 'Failed to process PLN postpaid data', 500);

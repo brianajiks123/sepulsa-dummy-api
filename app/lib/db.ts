@@ -17,7 +17,7 @@ export async function logTransaction(
     `;
 }
 
-export async function createPlnCustomer(
+export async function updatePlnCustomer(
     idPelanggan: string,
     namaPelanggan: string,
     emailPelanggan: string | null,
@@ -33,8 +33,9 @@ export async function createPlnCustomer(
             nama_pelanggan = EXCLUDED.nama_pelanggan,
             email_pelanggan = EXCLUDED.email_pelanggan,
             nomor_pelanggan = EXCLUDED.nomor_pelanggan,
-            nominal = EXCLUDED.nominal
-        RETURNING id, id_pelanggan, nama_pelanggan, email_pelanggan, nomor_pelanggan, nominal, created_at AT TIME ZONE 'Asia/Jakarta' AS created_at
+            nominal = EXCLUDED.nominal,
+            updated_at = NOW()
+        RETURNING id, id_pelanggan, nama_pelanggan, email_pelanggan, nomor_pelanggan, nominal, created_at AT TIME ZONE 'Asia/Jakarta' AS created_at, updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
     `;
     return row as PlnCustomer;
 }
@@ -60,7 +61,7 @@ export async function updatePlnToken(
             nominal = EXCLUDED.nominal,
             token_number = EXCLUDED.token_number,
             updated_at = NOW()
-        RETURNING id, nomor_meter, nama_pelanggan, email_pelanggan, nomor_pelanggan, nominal, token_number, created_at AT TIME ZONE 'Asia/Jakarta' AS created_at
+        RETURNING id, nomor_meter, nama_pelanggan, email_pelanggan, nomor_pelanggan, nominal, token_number, created_at AT TIME ZONE 'Asia/Jakarta' AS created_at, updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
     `;
     return result[0];
 }
