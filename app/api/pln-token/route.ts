@@ -13,7 +13,7 @@ export async function OPTIONS(request: NextRequest) {
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const { nomor_meter, nama_pelanggan, email_pelanggan, nomor_pelanggan, nominal, token_number } = body;
+        const { nomor_meter, nama_pelanggan, email_pelanggan, nomor_pelanggan, nominal, token_number, skipLog } = body;
         if (!nomor_meter || !nama_pelanggan || !nomor_pelanggan || nominal == null || !token_number) {
             return errorResponse(request, 'Missing required fields: nomor_meter, nama_pelanggan, nomor_pelanggan, nominal, token_number', 400);
         }
@@ -24,12 +24,14 @@ export async function POST(request: NextRequest) {
             return errorResponse(request, 'Invalid nominal: must be a positive number', 400);
         }
         const emailPel = email_pelanggan || null;
-        await logTransaction(
-            'PLN TOKEN',
-            'pending',
-            `Pembelian token listrik untuk ${nomor_meter}`,
-            { nomor_meter, nama_pelanggan, email_pelanggan: emailPel, nomor_pelanggan, nominal, token_number }
-        );
+        if (!skipLog) {
+            await logTransaction(
+                'PLN TOKEN',
+                'pending',
+                `Pembelian token listrik untuk ${nomor_meter}`,
+                { nomor_meter, nama_pelanggan, email_pelanggan: emailPel, nomor_pelanggan, nominal, token_number }
+            );
+        }
         const tokenData = await updatePlnToken(nomor_meter, nama_pelanggan, emailPel, nomor_pelanggan, nominal, token_number);
         return jsonResponse(request, {
             message: 'Data token listrik berhasil diupdate/dicatat',

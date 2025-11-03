@@ -13,7 +13,7 @@ export async function OPTIONS(request: NextRequest) {
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const { id_pelanggan, nama_pelanggan, email_pelanggan, nomor_pelanggan, nominal } = body;
+        const { id_pelanggan, nama_pelanggan, email_pelanggan, nomor_pelanggan, nominal, skipLog } = body;
         if (!id_pelanggan || !nama_pelanggan || !nomor_pelanggan || nominal == null) {
             return errorResponse(request, 'Missing required fields: id_pelanggan, nama_pelanggan, nomor_pelanggan, nominal', 400);
         }
@@ -24,12 +24,14 @@ export async function POST(request: NextRequest) {
         if (typeof nominal !== 'number' || nominal <= 0) {
             return errorResponse(request, 'Invalid nominal: must be a positive number', 400);
         }
-        await logTransaction(
-            'PLN PASCABAYAR',
-            'pending',
-            `Pembayaran PLN pascabayar untuk ${nomor_pelanggan}`,
-            { id_pelanggan, nama_pelanggan, email_pelanggan: email, nomor_pelanggan, nominal }
-        );
+        if (!skipLog) {
+            await logTransaction(
+                'PLN PASCABAYAR',
+                'pending',
+                `Pembayaran PLN pascabayar untuk ${nomor_pelanggan}`,
+                { id_pelanggan, nama_pelanggan, email_pelanggan: email, nomor_pelanggan, nominal }
+            );
+        }
         const customer = await updatePlnCustomer(id_pelanggan, nama_pelanggan, email, nomor_pelanggan, nominal);
         return jsonResponse(request, { message: 'Data pelanggan PLN pascabayar berhasil diupdate/dicatat', data: customer }, 201);
     } catch (error) {
