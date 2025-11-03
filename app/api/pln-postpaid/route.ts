@@ -109,7 +109,7 @@ export async function GET(request: NextRequest) {
             return errorResponse(request, 'No pelanggan found matching the criteria', 404);
         }
         return jsonResponse(request, {
-            data: rows, count: rows.length, filters: { nomor_pelanggan: nomorPelanggan || null, id_pelanggan: idPelanggan || null }
+            pelanggan: rows, count: rows.length, filters: { nomor_pelanggan: nomorPelanggan || null, id_pelanggan: idPelanggan || null }
         });
     } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';

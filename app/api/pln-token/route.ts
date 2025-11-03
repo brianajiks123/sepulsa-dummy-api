@@ -83,7 +83,7 @@ export async function GET(request: NextRequest) {
             return errorResponse(request, 'No token data found matching the criteria', 404);
         }
         return jsonResponse(request, {
-            data: rows, count: rows.length, filters: { nomor_meter: nomorMeter || null }
+            pelanggan: rows, count: rows.length, filters: { nomor_meter: nomorMeter || null }
         });
     } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
