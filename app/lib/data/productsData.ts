@@ -21,7 +21,7 @@ export const productsData = {
             { name: 'e-Meterai', icon: '/icons/products/ic_emeterai_1.svg', link: '/product/pulsa' },
         ],
         'Beli Voucher': [
-            { name: 'Voucher Game', icon: '/icons/products/icon-voucher-game.svg', link: '/product/pulsa' },
+            { name: 'Voucher Game', icon: '/icons/products/icon-voucher-game.svg', link: '/product/voucher-game' },
             { name: 'Voucher Deals', icon: '/icons/products/ic_Voucher_Deals.svg', link: '/product/pulsa' },
             { name: 'Voucher Edukasi', icon: '/icons/products/ic_Edukasi.svg', link: '/product/pulsa' },
             { name: 'Voucher Streaming', icon: '/icons/products/ic_Streaming.svg', link: '/product/pulsa' },
