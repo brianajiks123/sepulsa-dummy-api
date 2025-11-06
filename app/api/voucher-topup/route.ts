@@ -3,7 +3,6 @@ import { corsOptions } from '@/app/lib/utils/cors';
 import { sql } from '@/app/lib/db';
 import { logTransaction, updateVoucherTopup } from '@/app/lib/db';
 import { jsonResponse, errorResponse } from '@/app/lib/utils/response';
-import { corsJson } from '@/app/lib/utils/cors';
 import type { VoucherTopup } from '@/app/lib/types/voucher';
 
 export async function OPTIONS(request: NextRequest) {
@@ -96,14 +95,6 @@ export async function GET(request: NextRequest) {
             stack: error instanceof Error ? error.stack : undefined,
             params: { nomor_id: nomorId, limit }
         });
-        return corsJson(request, {
-            success: false,
-            status: 500,
-            data: { data: [], count: 0, filters: { nomor_id: null } },
-            error: {
-                message: 'Failed to query topup data',
-                details: errorMessage,
-            },
-        }, 500);
+        return errorResponse(request, 'Failed to query topup data', 500);
     }
 }
