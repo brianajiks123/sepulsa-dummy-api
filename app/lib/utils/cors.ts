@@ -15,23 +15,27 @@ export function corsOptions(request: NextRequest) {
     const origin = request.headers.get("origin");
     console.log(`[CORS] Origin received: ${origin}`);
     const isAllowedOrigin = !origin || allowedOrigins.includes(origin) || (process.env.NODE_ENV === "development" && allowedOrigins.length === 0);
-
-    const headers = new Headers(CORS_HEADERS);
+    const headers = new Headers();
+    headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    headers.set("Access-Control-Allow-Credentials", "true");
+    headers.set("Access-Control-Max-Age", "86400");
     if (isAllowedOrigin) {
         headers.set("Access-Control-Allow-Origin", origin || "*");
     }
-
     return new NextResponse(null, { status: 204, headers });
 }
 
 export function corsJson(request: NextRequest, data: unknown, status = 200) {
     const origin = request.headers.get("origin");
     const isAllowedOrigin = !origin || allowedOrigins.includes(origin) || (process.env.NODE_ENV === "development" && allowedOrigins.length === 0);
-
-    const headers = new Headers(CORS_HEADERS);
+    const headers = new Headers();
+    headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    headers.set("Access-Control-Allow-Credentials", "true");
+    headers.set("Access-Control-Max-Age", "86400");
     if (isAllowedOrigin) {
         headers.set("Access-Control-Allow-Origin", origin || "*");
     }
-
     return NextResponse.json(data, { status, headers });
 }
