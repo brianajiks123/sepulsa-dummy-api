@@ -13,11 +13,11 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
         const { nomor_id, nama_pelanggan, email_pelanggan, nomor_pelanggan, nominal, topup_code, skipLog } = body;
-        if (!nomor_id || !nama_pelanggan || !nomor_pelanggan || nominal == null || !topup_code) {
-            return errorResponse(request, 'Missing required fields: nomor_id, nama_pelanggan, nomor_pelanggan, nominal, topup_code', 400);
+        if (!nomor_id || !nama_pelanggan || nominal == null || !topup_code) {
+            return errorResponse(request, 'Missing required fields: nomor_id, nama_pelanggan, nominal, topup_code', 400);
         }
-        if (typeof nomor_id !== 'string' || typeof nama_pelanggan !== 'string' || typeof nomor_pelanggan !== 'string' || typeof topup_code !== 'string') {
-            return errorResponse(request, 'Invalid types: nomor_id, nama_pelanggan, nomor_pelanggan, topup_code must be strings', 400);
+        if (typeof nomor_id !== 'string' || typeof nama_pelanggan !== 'string' || typeof topup_code !== 'string') {
+            return errorResponse(request, 'Invalid types: nomor_id, nama_pelanggan, topup_code must be strings', 400);
         }
         if (typeof nominal !== 'number' || nominal <= 0) {
             return errorResponse(request, 'Invalid nominal: must be a positive number', 400);
