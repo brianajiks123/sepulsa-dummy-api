@@ -1,6 +1,5 @@
 import { neon } from '@netlify/neon';
 import { PlnCustomer } from './types/pln';
-import { VoucherCustomer } from './types/voucher';
 
 export const sql = neon();
 
