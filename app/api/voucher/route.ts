@@ -1,42 +1,12 @@
 import { NextRequest } from 'next/server';
 import { corsOptions } from '@/app/lib/utils/cors';
 import { sql } from '@/app/lib/db';
-import { logTransaction, updateVoucherCustomer } from '@/app/lib/db';
+import { logTransaction } from '@/app/lib/db';
 import { jsonResponse, errorResponse } from '@/app/lib/utils/response';
 import type { VoucherCustomer } from '@/app/lib/types/voucher';
 
 export async function OPTIONS(request: NextRequest) {
     return corsOptions(request);
-}
-
-export async function POST(request: NextRequest) {
-    try {
-        const body = await request.json();
-        const { id_pelanggan, nama_pelanggan, email_pelanggan, nomor_pelanggan, nominal, skipLog } = body;
-        if (!id_pelanggan || !nama_pelanggan || !nomor_pelanggan || nominal == null) {
-            return errorResponse(request, 'Missing required fields: id_pelanggan, nama_pelanggan, nomor_pelanggan, nominal', 400);
-        }
-        if (typeof id_pelanggan !== 'string' || typeof nama_pelanggan !== 'string' || typeof nomor_pelanggan !== 'string') {
-            return errorResponse(request, 'Invalid types: fields must be strings', 400);
-        }
-        const email = email_pelanggan || null;
-        if (typeof nominal !== 'number' || nominal <= 0) {
-            return errorResponse(request, 'Invalid nominal: must be a positive number', 400);
-        }
-        if (!skipLog) {
-            await logTransaction(
-                'VOUCHER GAME',
-                'pending',
-                `Pembelian voucher game untuk ${nomor_pelanggan}`,
-                { id_pelanggan, nama_pelanggan, email_pelanggan: email, nomor_pelanggan, nominal }
-            );
-        }
-        const customer = await updateVoucherCustomer(id_pelanggan, nama_pelanggan, email, nomor_pelanggan, nominal);
-        return jsonResponse(request, { message: 'Data pelanggan voucher game berhasil diupdate/dicatat', data: customer }, 201);
-    } catch (error) {
-        console.error('Error processing voucher game:', error);
-        return errorResponse(request, 'Failed to process voucher game data', 500);
-    }
 }
 
 export async function GET(request: NextRequest) {
@@ -124,5 +94,45 @@ export async function GET(request: NextRequest) {
             params: { nomor_pelanggan: nomorPelanggan, id_pelanggan: idPelanggan, limit }
         });
         return errorResponse(request, 'Failed to query pelanggan data', 500);
+    }
+}
+
+export async function POST(request: NextRequest) {
+    try {
+        const body = await request.json();
+        const { id_pelanggan, nama_pelanggan, email_pelanggan, nomor_pelanggan, nominal, skipLog } = body;
+        if (!id_pelanggan || !nama_pelanggan || !nomor_pelanggan || nominal == null) {
+            return errorResponse(request, 'Missing required fields: id_pelanggan, nama_pelanggan, nomor_pelanggan, nominal', 400);
+        }
+        if (typeof id_pelanggan !== 'string' || typeof nama_pelanggan !== 'string' || typeof nomor_pelanggan !== 'string') {
+            return errorResponse(request, 'Invalid types: fields must be strings', 400);
+        }
+        const email = email_pelanggan || null;
+        if (typeof nominal !== 'number' || nominal <= 0) {
+            return errorResponse(request, 'Invalid nominal: must be a positive number', 400);
+        }
+        if (!skipLog) {
+            await logTransaction(
+                'VOUCHER',
+                'pending',
+                `Pembelian voucher untuk ${id_pelanggan}`,
+                { id_pelanggan, nama_pelanggan, email_pelanggan: email, nomor_pelanggan, nominal }
+            );
+        }
+        const [customer] = await sql`
+            INSERT INTO voucher_customers (id_pelanggan, nama_pelanggan, email_pelanggan, nomor_pelanggan, nominal)
+            VALUES (${id_pelanggan}, ${nama_pelanggan}, ${email}, ${nomor_pelanggan}, ${nominal})
+            ON CONFLICT (id_pelanggan) DO UPDATE SET
+                nama_pelanggan = EXCLUDED.nama_pelanggan,
+                email_pelanggan = EXCLUDED.email_pelanggan,
+                nomor_pelanggan = EXCLUDED.nomor_pelanggan,
+                nominal = EXCLUDED.nominal,
+                updated_at = NOW()
+            RETURNING id, id_pelanggan, nama_pelanggan, email_pelanggan, nomor_pelanggan, nominal, created_at AT TIME ZONE 'Asia/Jakarta' AS created_at, updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
+        `;
+        return jsonResponse(request, { message: 'Data voucher pelanggan berhasil diupdate/dicatat', data: customer }, 201);
+    } catch (error) {
+        console.error('Error processing voucher:', error);
+        return errorResponse(request, 'Failed to process voucher data', 500);
     }
 }

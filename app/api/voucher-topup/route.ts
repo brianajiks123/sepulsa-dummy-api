@@ -1,45 +1,12 @@
 import { NextRequest } from 'next/server';
 import { corsOptions } from '@/app/lib/utils/cors';
 import { sql } from '@/app/lib/db';
-import { logTransaction, updateVoucherTopup } from '@/app/lib/db';
+import { logTransaction } from '@/app/lib/db';
 import { jsonResponse, errorResponse } from '@/app/lib/utils/response';
 import type { VoucherTopup } from '@/app/lib/types/voucher';
 
 export async function OPTIONS(request: NextRequest) {
     return corsOptions(request);
-}
-
-export async function POST(request: NextRequest) {
-    try {
-        const body = await request.json();
-        const { nomor_id, nama_pelanggan, email_pelanggan, nomor_pelanggan, nominal, topup_code, skipLog } = body;
-        if (!nomor_id || !nama_pelanggan || nominal == null || !topup_code) {
-            return errorResponse(request, 'Missing required fields: nomor_id, nama_pelanggan, nominal, topup_code', 400);
-        }
-        if (typeof nomor_id !== 'string' || typeof nama_pelanggan !== 'string' || typeof topup_code !== 'string') {
-            return errorResponse(request, 'Invalid types: nomor_id, nama_pelanggan, topup_code must be strings', 400);
-        }
-        if (typeof nominal !== 'number' || nominal <= 0) {
-            return errorResponse(request, 'Invalid nominal: must be a positive number', 400);
-        }
-        const emailPel = email_pelanggan || null;
-        if (!skipLog) {
-            await logTransaction(
-                'VOUCHER TOPUP',
-                'pending',
-                `Topup voucher game untuk ${nomor_id}`,
-                { nomor_id, nama_pelanggan, email_pelanggan: emailPel, nomor_pelanggan, nominal, topup_code }
-            );
-        }
-        const topupData = await updateVoucherTopup(nomor_id, nama_pelanggan, emailPel, nomor_pelanggan, nominal, topup_code);
-        return jsonResponse(request, {
-            message: 'Data topup voucher game berhasil diupdate/dicatat',
-            data: topupData,
-        }, 201);
-    } catch (error) {
-        console.error('Error processing voucher topup:', error);
-        return errorResponse(request, 'Failed to process voucher topup data', 500);
-    }
 }
 
 export async function GET(request: NextRequest) {
@@ -96,5 +63,47 @@ export async function GET(request: NextRequest) {
             params: { nomor_id: nomorId, limit }
         });
         return errorResponse(request, 'Failed to query topup data', 500);
+    }
+}
+
+export async function POST(request: NextRequest) {
+    try {
+        const body = await request.json();
+        const { nomor_id, nama_pelanggan, email_pelanggan, nomor_pelanggan, nominal, topup_code, skipLog } = body;
+        if (!nomor_id || !nama_pelanggan || nominal == null || !topup_code) {
+            return errorResponse(request, 'Missing required fields: nomor_id, nama_pelanggan, nominal, topup_code', 400);
+        }
+        if (typeof nomor_id !== 'string' || typeof nama_pelanggan !== 'string' || typeof topup_code !== 'string') {
+            return errorResponse(request, 'Invalid types: nomor_id, nama_pelanggan, topup_code must be strings', 400);
+        }
+        if (typeof nominal !== 'number' || nominal <= 0) {
+            return errorResponse(request, 'Invalid nominal: must be a positive number', 400);
+        }
+        const email = email_pelanggan || null;
+        const nomorPel = nomor_pelanggan || null;
+        if (!skipLog) {
+            await logTransaction(
+                'VOUCHER TOPUP',
+                'pending',
+                `Topup voucher untuk ${nomor_id}`,
+                { nomor_id, nama_pelanggan, email_pelanggan: email, nomor_pelanggan: nomorPel, nominal, topup_code }
+            );
+        }
+        const [topup] = await sql`
+            INSERT INTO voucher_topups (nomor_id, nama_pelanggan, email_pelanggan, nomor_pelanggan, nominal, topup_code)
+            VALUES (${nomor_id}, ${nama_pelanggan}, ${email}, ${nomorPel}, ${nominal}, ${topup_code})
+            ON CONFLICT (nomor_id) DO UPDATE SET
+                nama_pelanggan = EXCLUDED.nama_pelanggan,
+                email_pelanggan = EXCLUDED.email_pelanggan,
+                nomor_pelanggan = EXCLUDED.nomor_pelanggan,
+                nominal = EXCLUDED.nominal,
+                topup_code = EXCLUDED.topup_code,
+                updated_at = NOW()
+            RETURNING id, nomor_id, nama_pelanggan, email_pelanggan, nomor_pelanggan, nominal, topup_code, created_at AT TIME ZONE 'Asia/Jakarta' AS created_at, updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
+        `;
+        return jsonResponse(request, { message: 'Data topup voucher berhasil diupdate/dicatat', data: topup }, 201);
+    } catch (error) {
+        console.error('Error processing voucher topup:', error);
+        return errorResponse(request, 'Failed to process voucher topup data', 500);
     }
 }
