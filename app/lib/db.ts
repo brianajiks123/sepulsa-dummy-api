@@ -1,5 +1,5 @@
 import { neon } from '@netlify/neon';
-import { PlnCustomer } from './types/pln';
+import { PlnCustomer, PlnToken } from './types/pln';
 
 export const sql = neon();
 
@@ -45,10 +45,10 @@ export async function updatePlnToken(
     nomorPelanggan: string | null,
     nominal: number,
     tokenNumber: string
-) {
+): Promise<PlnToken> {
     const emailValue = emailPelanggan ?? 'no-email@example.com';
     const nomorPelValue = nomorPelanggan ?? '';
-    const result = await sql`
+    const [result] = await sql`
         INSERT INTO pln_tokens (nomor_meter, nama_pelanggan, email_pelanggan, nomor_pelanggan, nominal, token_number)
         VALUES (${nomorMeter}, ${namaPelanggan}, ${emailValue}, ${nomorPelValue}, ${nominal}, ${tokenNumber})
         ON CONFLICT (nomor_meter) DO UPDATE SET
@@ -60,5 +60,5 @@ export async function updatePlnToken(
             updated_at = NOW()
         RETURNING id, nomor_meter, nama_pelanggan, email_pelanggan, nomor_pelanggan, nominal, token_number, created_at AT TIME ZONE 'Asia/Jakarta' AS created_at, updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
     `;
-    return result[0];
+    return result as PlnToken;
 }

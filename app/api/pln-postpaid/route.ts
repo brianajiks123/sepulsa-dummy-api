@@ -1,9 +1,9 @@
 import { NextRequest } from 'next/server';
 import { corsOptions } from '@/app/lib/utils/cors';
-import { sql } from '@/app/lib/db';
 import { logTransaction, updatePlnCustomer } from '@/app/lib/db';
 import { jsonResponse, errorResponse } from '@/app/lib/utils/response';
 import type { PlnCustomer } from '@/app/lib/types/pln';
+import { sql } from '@/app/lib/db';
 
 export async function OPTIONS(request: NextRequest) {
     return corsOptions(request);

@@ -1,7 +1,6 @@
 import { NextRequest } from 'next/server';
 import { corsOptions } from '@/app/lib/utils/cors';
-import { sql } from '@/app/lib/db';
-import { logTransaction } from '@/app/lib/db';
+import { sql, logTransaction } from '@/app/lib/db';
 import { jsonResponse, errorResponse } from '@/app/lib/utils/response';
 
 export async function OPTIONS(request: NextRequest) {
@@ -14,14 +13,14 @@ export async function GET(request: NextRequest) {
     const idPelanggan = searchParams.get('id_pelanggan');
     const limit = idPelanggan ? 1 : Math.min(parseInt(searchParams.get('limit') || '50', 10), 100);
     try {
-        let whereClause = sql``;
+        let whereClause = sql`WHERE transaction_type ILIKE '%VOUCHER%'`;
         if (nomorPelanggan || idPelanggan) {
             if (nomorPelanggan && idPelanggan) {
-                whereClause = sql`AND (details->>'nomor_pelanggan' = ${nomorPelanggan} AND details->>'id_pelanggan' = ${idPelanggan})`;
+                whereClause = sql`${whereClause} AND (details->>'nomor_pelanggan' = ${nomorPelanggan} AND details->>'id_pelanggan' = ${idPelanggan})`;
             } else if (nomorPelanggan) {
-                whereClause = sql`AND details->>'nomor_pelanggan' = ${nomorPelanggan}`;
+                whereClause = sql`${whereClause} AND details->>'nomor_pelanggan' = ${nomorPelanggan}`;
             } else if (idPelanggan) {
-                whereClause = sql`AND details->>'id_pelanggan' = ${idPelanggan}`;
+                whereClause = sql`${whereClause} AND details->>'id_pelanggan' = ${idPelanggan}`;
             }
         }
         const rows = await sql`
@@ -34,7 +33,6 @@ export async function GET(request: NextRequest) {
                 details,
                 created_at AT TIME ZONE 'Asia/Jakarta' AS created_at
             FROM log
-            WHERE transaction_type ILIKE '%VOUCHER%'
             ${whereClause}
             ORDER BY created_at DESC
             LIMIT ${limit}
