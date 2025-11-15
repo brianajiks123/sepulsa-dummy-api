@@ -11,7 +11,6 @@ export async function logTransaction(
     details?: Record<string, unknown>
 ): Promise<void> {
     const detailsValue = details ? JSON.stringify(details) : null;
-    await sql`SET LOCAL TIME ZONE 'Asia/Jakarta';`;
     await sql`
         INSERT INTO log (transaction_type, status, message, details)
         VALUES (${transactionType}, ${status}, ${message}, ${detailsValue}::jsonb)
@@ -25,7 +24,6 @@ export async function updatePlnCustomer(
     nomorPelanggan: string,
     nominal: number
 ): Promise<PlnCustomer> {
-    await sql`SET LOCAL TIME ZONE 'Asia/Jakarta';`;
     const emailValue = emailPelanggan ?? 'no-email@example.com';
     const [row] = await sql`
         INSERT INTO pln_customers (id_pelanggan, nama_pelanggan, email_pelanggan, nomor_pelanggan, nominal)
@@ -49,7 +47,6 @@ export async function updatePlnToken(
     nominal: number,
     tokenNumber: string
 ) {
-    await sql`SET LOCAL TIME ZONE 'Asia/Jakarta';`;
     const emailValue = emailPelanggan ?? 'no-email@example.com';
     const nomorPelValue = nomorPelanggan ?? '';
     const result = await sql`
@@ -74,7 +71,6 @@ export async function updateVoucherCustomer(
     nomorPelanggan: string,
     nominal: number
 ): Promise<VoucherCustomer> {
-    await sql`SET LOCAL TIME ZONE 'Asia/Jakarta';`;
     const emailValue = emailPelanggan ?? 'no-email@example.com';
     const [row] = await sql`
         INSERT INTO voucher_customers (id_pelanggan, nama_pelanggan, email_pelanggan, nomor_pelanggan, nominal)
@@ -98,7 +94,6 @@ export async function updateVoucherTopup(
     nominal: number,
     topupCode: string
 ) {
-    await sql`SET LOCAL TIME ZONE 'Asia/Jakarta';`;
     const emailValue = emailPelanggan ?? 'no-email@example.com';
     const nomorPelValue = nomorPelanggan ?? '';
     const result = await sql`

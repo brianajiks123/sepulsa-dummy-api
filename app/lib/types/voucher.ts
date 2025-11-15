@@ -4,7 +4,7 @@ export type VoucherCustomer = {
     nama_pelanggan: string;
     email_pelanggan?: string;
     nomor_pelanggan?: string;
-    nominal?: number;
+    nominal: number;
     created_at: string;
     updated_at: string;
 }
@@ -15,7 +15,7 @@ export type VoucherTopup = {
     nama_pelanggan: string;
     email_pelanggan?: string;
     nomor_pelanggan?: string;
-    nominal?: number;
+    nominal: number;
     topup_code?: string;
     created_at: string;
     updated_at: string;
