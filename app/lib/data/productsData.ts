@@ -14,7 +14,7 @@ export const productsData = {
             { name: 'BPJS Kesehatan', icon: '/icons/products/bpjs_kesehatan.svg', link: '/product/pulsa' },
             { name: 'Kartu Kredit', icon: '/icons/products/ic_Kartu_Kredit.svg', link: '/product/pulsa' },
             { name: 'PBB', icon: '/icons/products/ic_PBB.svg', link: '/product/pulsa' },
-            { name: 'Gas', icon: '/icons/products/ic_Gas.svg', link: '/product/pulsa' },
+            { name: 'Gas', icon: '/icons/products/ic_Gas.svg', link: '/product/gas' },
             { name: 'Properti', icon: '/icons/products/ic_Properti.svg', link: '/product/pulsa' },
             { name: 'BPJS Ketenagakerjaan', icon: '/icons/products/ic_BPJS_Ketenagakerjaan.svg', link: '/product/pulsa' },
             { name: 'Pendidikan', icon: '/icons/products/ic_Pendidikan.svg', link: '/product/pulsa' },
@@ -33,7 +33,7 @@ export const productsData = {
             { name: 'Asuransi', icon: '/icons/products/ic_Asuransi.svg', link: '/product/pulsa' },
         ],
         'Dana Sosial': [
-            { name: 'Sepulsa Berkah', icon: '/icons/products/ic_Donasi.svg', link: '/product/pulsa' },
+            { name: 'UPulsa Berkah', icon: '/icons/products/ic_Donasi.svg', link: '/product/pulsa' },
         ],
     },
 };

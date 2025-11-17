@@ -5,14 +5,14 @@ export const articlesData = [
         description:
             'Telkomsel sebagai salah satu provider terbesar di Indonesia menghadirkan paket internet khusus pelajar...',
         image: '/images/article1.webp',
-        link: 'https://www.sepulsa.com/blog/kuota-belajar-telkomsel',
+        link: 'https://www.upulsa.com/blog/kuota-belajar-telkomsel',
     },
     {
         id: 2,
         title: 'Berbagai Cara Pesan Tiket Kereta Api Secara Online',
         description: 'Tidak perlu lagi ke loket stasiun untuk membeli tiket kereta...',
         image: '/images/article2.webp',
-        link: 'https://www.sepulsa.com/blog/berbagai-cara-pesan-tiket-kereta-api-secara-online',
+        link: 'https://www.upulsa.com/blog/berbagai-cara-pesan-tiket-kereta-api-secara-online',
     },
     {
         id: 3,
@@ -20,6 +20,6 @@ export const articlesData = [
         description:
             'Kamu yang sering bepergian ke luar kota menggunakan kereta api, pasti sudah mengenai aplikasi resmi dari PT Kereta Api. KAI...',
         image: '/images/article3.webp',
-        link: 'https://www.sepulsa.com/blog/cara-aktivasi-kai-access-hanya-dengan-5-langkah-saja',
+        link: 'https://www.upulsa.com/blog/cara-aktivasi-kai-access-hanya-dengan-5-langkah-saja',
     },
 ];
