@@ -9,7 +9,7 @@ export async function OPTIONS(request: NextRequest) {
     return corsOptions(request);
 }
 
-export async function POST(request: NextRequest) {
+export async function PUT(request: NextRequest) {
     try {
         const body = await request.json();
         const { nomor_meter, nama_pelanggan, email_pelanggan, nomor_pelanggan, nominal, token_number, skipLog } = body;

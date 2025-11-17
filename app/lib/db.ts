@@ -1,5 +1,6 @@
 import { neon } from '@netlify/neon';
 import { PlnCustomer, PlnToken } from './types/pln';
+import { GasCustomer } from './types/gas';
 
 export const sql = neon();
 
@@ -61,4 +62,26 @@ export async function updatePlnToken(
         RETURNING id, nomor_meter, nama_pelanggan, email_pelanggan, nomor_pelanggan, nominal, token_number, created_at AT TIME ZONE 'Asia/Jakarta' AS created_at, updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
     `;
     return result as PlnToken;
+}
+
+export async function updateGasCustomer(
+    idPelanggan: string,
+    namaPelanggan: string,
+    emailPelanggan: string | null,
+    nomorPelanggan: string,
+    nominal: number
+): Promise<GasCustomer> {
+    const emailValue = emailPelanggan ?? 'no-email@example.com';
+    const [row] = await sql`
+        INSERT INTO gas_customers (id_pelanggan, nama_pelanggan, email_pelanggan, nomor_pelanggan, nominal)
+        VALUES (${idPelanggan}, ${namaPelanggan}, ${emailValue}, ${nomorPelanggan}, ${nominal})
+        ON CONFLICT (id_pelanggan) DO UPDATE SET
+            nama_pelanggan = EXCLUDED.nama_pelanggan,
+            email_pelanggan = EXCLUDED.email_pelanggan,
+            nomor_pelanggan = EXCLUDED.nomor_pelanggan,
+            nominal = EXCLUDED.nominal,
+            updated_at = NOW()
+        RETURNING id, id_pelanggan, nama_pelanggan, email_pelanggan, nomor_pelanggan, nominal, created_at AT TIME ZONE 'Asia/Jakarta' AS created_at, updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
+    `;
+    return row as GasCustomer;
 }
