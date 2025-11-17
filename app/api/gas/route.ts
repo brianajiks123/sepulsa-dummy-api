@@ -1,8 +1,8 @@
 import { NextRequest } from 'next/server';
 import { corsOptions } from '@/app/lib/utils/cors';
-import { logTransaction, updatePlnCustomer } from '@/app/lib/db';
+import { logTransaction, updateGasCustomer } from '@/app/lib/db';
 import { jsonResponse, errorResponse } from '@/app/lib/utils/response';
-import type { PlnCustomer } from '@/app/lib/types/pln';
+import type { GasCustomer } from '@/app/lib/types/gas';
 import { sql } from '@/app/lib/db';
 
 export async function OPTIONS(request: NextRequest) {
@@ -25,17 +25,17 @@ export async function PUT(request: NextRequest) {
         }
         if (!skipLog) {
             await logTransaction(
-                'PLN PASCABAYAR',
+                'GAS',
                 'pending',
-                `Pembayaran PLN pascabayar untuk ${nomor_pelanggan}`,
+                `Pembayaran tagihan Gas untuk ${nomor_pelanggan}`,
                 { id_pelanggan, nama_pelanggan, email_pelanggan: email, nomor_pelanggan, nominal }
             );
         }
-        const customer = await updatePlnCustomer(id_pelanggan, nama_pelanggan, email, nomor_pelanggan, nominal);
-        return jsonResponse(request, { message: 'Data pelanggan PLN pascabayar berhasil diupdate/dicatat', data: customer }, 201);
+        const customer = await updateGasCustomer(id_pelanggan, nama_pelanggan, email, nomor_pelanggan, nominal);
+        return jsonResponse(request, { message: 'Data pelanggan tagihan Gas berhasil diupdate/dicatat', data: customer }, 201);
     } catch (error) {
-        console.error('Error processing PLN postpaid:', error);
-        return errorResponse(request, 'Failed to process PLN postpaid data', 500);
+        console.error('Error processing Gas postpaid:', error);
+        return errorResponse(request, 'Failed to process Gas postpaid data', 500);
     }
 }
 
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
     const idPelanggan = searchParams.get('id_pelanggan');
     const limit = idPelanggan ? 1 : Math.min(parseInt(searchParams.get('limit') || '50', 10), 100);
     try {
-        let rows: PlnCustomer[];
+        let rows: GasCustomer[];
         if (nomorPelanggan && idPelanggan) {
             rows = await sql`
                 SELECT
@@ -57,11 +57,11 @@ export async function GET(request: NextRequest) {
                     nominal,
                     created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
                     updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
-                FROM pln_customers
+                FROM gas_customers
                 WHERE nomor_pelanggan = ${nomorPelanggan} AND id_pelanggan = ${idPelanggan}
                 ORDER BY created_at DESC
                 LIMIT ${limit}
-            ` as PlnCustomer[];
+            ` as GasCustomer[];
         } else if (nomorPelanggan) {
             rows = await sql`
                 SELECT
@@ -73,11 +73,11 @@ export async function GET(request: NextRequest) {
                     nominal,
                     created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
                     updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
-                FROM pln_customers
+                FROM gas_customers
                 WHERE nomor_pelanggan = ${nomorPelanggan}
                 ORDER BY created_at DESC
                 LIMIT ${limit}
-            ` as PlnCustomer[];
+            ` as GasCustomer[];
         } else if (idPelanggan) {
             rows = await sql`
                 SELECT
@@ -89,11 +89,11 @@ export async function GET(request: NextRequest) {
                     nominal,
                     created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
                     updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
-                FROM pln_customers
+                FROM gas_customers
                 WHERE id_pelanggan = ${idPelanggan}
                 ORDER BY created_at DESC
                 LIMIT ${limit}
-            ` as PlnCustomer[];
+            ` as GasCustomer[];
         } else {
             rows = await sql`
                 SELECT
@@ -105,10 +105,10 @@ export async function GET(request: NextRequest) {
                     nominal,
                     created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
                     updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
-                FROM pln_customers
+                FROM gas_customers
                 ORDER BY created_at DESC
                 LIMIT ${limit}
-            ` as PlnCustomer[];
+            ` as GasCustomer[];
         }
         if (rows.length === 0) {
             return errorResponse(request, 'No pelanggan found matching the criteria', 404);
@@ -118,7 +118,7 @@ export async function GET(request: NextRequest) {
         });
     } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
-        console.error('Error querying PLN customers:', {
+        console.error('Error querying Gas customers:', {
             message: errorMessage,
             stack: error instanceof Error ? error.stack : undefined,
             params: { nomor_pelanggan: nomorPelanggan, id_pelanggan: idPelanggan, limit }
